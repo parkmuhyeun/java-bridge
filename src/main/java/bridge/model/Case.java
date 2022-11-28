@@ -12,11 +12,14 @@ public enum Case {
         this.name = name;
     }
 
-    public String getPictogram() {
-        return pictogram;
-    }
-
     public String getName() {
         return name;
+    }
+
+    public static String getPictogram(boolean isPass) {
+        if (isPass) {
+            return SUCCESS.pictogram;
+        }
+        return FAIL.pictogram;
     }
 }
