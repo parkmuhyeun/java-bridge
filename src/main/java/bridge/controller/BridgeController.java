@@ -12,8 +12,6 @@ import bridge.view.InputView;
 import bridge.view.OutputView;
 import java.util.ArrayList;
 
-import static bridge.model.Case.*;
-
 public class BridgeController {
     private final OutputView outputView;
     private final InputView inputView;
@@ -35,29 +33,32 @@ public class BridgeController {
         outputView.printStartNotice();
         int size = inputBridgeSize();
         Bridge bridge = new Bridge(bridgeMaker.makeBridge(size));
-        ResultDTO resultDTO = crossBridge(bridge, new User(new ArrayList<>()));
-        outputView.printResult(resultDTO);
-    }
 
-    private ResultDTO crossBridge(Bridge bridge, User user) {
-        int count = 1;
-        while (true) {
-            boolean end = isCross(bridge, user);
-            if (isEnd(end)) {
-                return new ResultDTO(converter.convertToMapDTO(user), end, count);
+        User user = new User(new ArrayList<>());
+        boolean end = false;
+        while(true){
+            for (int round = 0; round < size; round++) {
+                String inputMoving = inputMoving();
+                boolean isPass = bridgeGame.move(bridge, inputMoving, user);
+                //출력
+                outputView.printMap(converter.convertToMapDTO(user));
+                //pass한지 아닌지
+                if (!isPass) {
+                    break;
+                }
+                //성공했다면
+                if (round == size - 1) {
+                    end = true;
+                }
             }
-            count = initGame(user, count);
+            //재입력
+            if (end || !bridgeGame.retry(inputGameCommand())) {
+                break;
+            }
+            user.clear();
         }
-    }
 
-    private int initGame(User user, int count) {
-        count++;
-        user.clear();
-        return count;
-    }
-
-    private boolean isEnd(boolean end) {
-        return end || !bridgeGame.retry(inputGameCommand());
+        outputView.printResult(new ResultDTO(converter.convertToMapDTO(user), end, bridgeGame.getCount()));
     }
 
     private int inputBridgeSize() {
@@ -69,37 +70,6 @@ public class BridgeController {
             System.out.println(exception.getMessage());
             return inputBridgeSize();
         }
-    }
-
-    private boolean isCross(Bridge bridge, User user) {
-        boolean end = false;
-        int size = bridge.getSize();
-        for (int round = 0; round < size; round++) {
-            if (!isMove(bridge, user, round)) {
-                break;
-            }
-            end = isSuccess(size, round);
-        }
-        return end;
-    }
-
-    private boolean isMove(Bridge bridge, User user, int round) {
-        String moving = inputMoving();
-        String pass = getPass(bridge, round, moving);
-        bridgeGame.move(user, moving, pass);
-        outputView.printMap(converter.convertToMapDTO(user));
-        return pass.equals(SUCCESS.getPictogram());
-    }
-
-    private boolean isSuccess(int size, int round) {
-        return round == size - 1;
-    }
-
-    private String getPass(Bridge bridge, int round, String moving) {
-        if (bridge.isPassable(round, moving)){
-            return SUCCESS.getPictogram();
-        }
-        return FAIL.getPictogram();
     }
 
     private String inputMoving() {

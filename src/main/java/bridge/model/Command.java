@@ -13,4 +13,8 @@ public enum Command {
     public String getName() {
         return name;
     }
+
+    public static boolean isRetry(String gameCommand) {
+        return gameCommand.equals(RETRY.name);
+    }
 }
