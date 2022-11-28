@@ -33,32 +33,43 @@ public class BridgeController {
         outputView.printStartNotice();
         int size = inputBridgeSize();
         Bridge bridge = new Bridge(bridgeMaker.makeBridge(size));
-
         User user = new User(new ArrayList<>());
+        crossBridge(bridge, user);
+        outputView.printResult(new ResultDTO(converter.convertToMapDTO(user)
+                , bridgeGame.isSuccess(), bridgeGame.getCount()));
+    }
+
+    private void crossBridge(Bridge bridge, User user) {
         while(true){
-            for (int round = 0; round < size; round++) {
-                String inputMoving = inputMoving();
-                boolean isPass = bridgeGame.move(bridge, inputMoving, user);
-                //출력
-                outputView.printMap(converter.convertToMapDTO(user));
-                //pass한지 아닌지
-                if (!isPass) {
-                    break;
-                }
-                //성공했다면
-                if (round == size - 1) {
-                    bridgeGame.updateSuccess();
-                    bridgeGame.updateEnd();
-                }
-            }
-            //재입력
-            if (bridgeGame.isEnd() || !bridgeGame.retry(inputGameCommand())) {
+            move(bridge, user);
+            if (isEnd()) {
                 break;
             }
             user.clear();
         }
+    }
 
-        outputView.printResult(new ResultDTO(converter.convertToMapDTO(user), bridgeGame.isSuccess(), bridgeGame.getCount()));
+    private boolean isEnd() {
+        return bridgeGame.isEnd() || !bridgeGame.retry(inputGameCommand());
+    }
+
+    private void move(Bridge bridge, User user) {
+        int size = bridge.getSize();
+        for (int round = 0; round < size; round++) {
+            boolean isPass = bridgeGame.move(bridge, inputMoving(), user);
+            outputView.printMap(converter.convertToMapDTO(user));
+            if (!isPass) {
+                break;
+            }
+            isSuccess(size, round);
+        }
+    }
+
+    private void isSuccess(int size, int round) {
+        if (round == size - 1) {
+            bridgeGame.updateSuccess();
+            bridgeGame.updateEnd();
+        }
     }
 
     private int inputBridgeSize() {
