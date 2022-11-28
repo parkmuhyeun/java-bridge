@@ -13,6 +13,21 @@ import static bridge.model.Command.isRetry;
 public class BridgeGame {
     private int count = 1;
     private int round = 0;
+    private boolean end;
+    private boolean success;
+
+    public int getCount() {
+        return count;
+    }
+
+    public boolean isEnd() {
+        return end;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
     /**
      * 사용자가 칸을 이동할 때 사용하는 메서드
      * <p>
@@ -31,14 +46,26 @@ public class BridgeGame {
      */
     public boolean retry(String gameCommand) {
         boolean retry = isRetry(gameCommand);
+        processCondition(retry);
+        return retry;
+    }
+
+    private void processCondition(boolean retry) {
         if (retry) {
             count++;
             round = 0;
         }
-        return retry;
+
+        if(!retry){
+            updateEnd();
+        }
     }
 
-    public int getCount() {
-        return count;
+    public void updateEnd() {
+        end = !end;
+    }
+
+    public void updateSuccess() {
+        success = !success;
     }
 }
