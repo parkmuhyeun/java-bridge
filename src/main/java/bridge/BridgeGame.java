@@ -51,13 +51,20 @@ public class BridgeGame {
     }
 
     private void processCondition(boolean retry) {
+        processRetry(retry);
+        processExit(retry);
+    }
+
+    private void processExit(boolean retry) {
+        if(!retry){
+            updateEnd();
+        }
+    }
+
+    private void processRetry(boolean retry) {
         if (retry) {
             count++;
             round = 0;
-        }
-
-        if(!retry){
-            updateEnd();
         }
     }
 
