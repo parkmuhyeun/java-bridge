@@ -15,7 +15,7 @@ public class InputView {
     public String readBridgeSize() {
         System.out.println(INPUT_BRIDGE_SIZE);
         String input = Console.readLine();
-        System.out.println();
+        System.out.println("");
         return input;
     }
 

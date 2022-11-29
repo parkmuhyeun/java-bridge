@@ -15,11 +15,11 @@ import static bridge.message.NoticeMessage.*;
  */
 public class OutputView {
     private static final String SPACE = " ";
+    private static final String NEW_LINE = "\n";
     private static final int SPACE_COUNT = 3;
 
     public void printStartNotice() {
-        System.out.println(START);
-        System.out.println();
+        System.out.println(START + NEW_LINE);
     }
 
     /**
@@ -32,8 +32,7 @@ public class OutputView {
         StringBuilder downBridge = new StringBuilder(MAP_START_BOUNDARY.getName());
         addBridge(mapDTO, upBridge, downBridge);
         System.out.println(upBridge);
-        System.out.println(downBridge);
-        System.out.println();
+        System.out.println(downBridge + NEW_LINE);
     }
 
     private void addBridge(MapDTO mapDTO, StringBuilder upBridge, StringBuilder downBridge) {
